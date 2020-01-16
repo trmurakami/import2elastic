@@ -1,40 +1,26 @@
 <?php
 
-if (isset($_FILES['file'])) {
+while ($line = fgets(STDIN)) {
 
-    $fh = fopen($_FILES['file']['tmp_name'], 'r+');
-    $row = fgetcsv($fh, 108192, ",");
-
+    $row = explode("\t", $line);
     $numberOfLines = count($row);
-
-    foreach ($row as $key => $value) {
-        $rowNum[$key] = $value;                        
+    if (!isset($rowLabel)) {
+        $rowLabel = $row;
     }
+    $doc = Record::Build($row, $rowLabel, $numberOfLines);
 
+    print_r($doc);
 
-    while (($row = fgetcsv($fh, 108192, ",")) !== false) {
-        $doc = Record::Build($row, $rowNum);
-        print_r($doc);
-        
-        //$sha256 = hash('sha256', ''.$doc["doc"]["source_id"].'');
-        //if (!is_null($sha256)) {
-            //$resultElastic = Elasticsearch::update($sha256, $doc);
-        //}        
-        //echo "<br/><br/><br/>";
-        //flush();        
-
-    }
-    fclose($row);
 }
 
 class Record
 {
-    public static function build($row, $rowNum, $tag = "")
+    public static function build($row, $rowLabel, $numberOfLines)
     {
 
         $i = 0;
         while ($i <= $numberOfLines) {
-            $doc["doc"][$rowNum[$i]] = $row[$rowNum[$i]];
+            $doc["doc"][$rowLabel[$i]] = $row[$i];
             $i++;
         }
         $doc["doc_as_upsert"] = true;
