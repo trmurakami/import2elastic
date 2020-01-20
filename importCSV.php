@@ -30,7 +30,7 @@ while ($line = fgets(STDIN)) {
     $params["id"] = $sha256;
     $params["body"] = $doc;
     $response = $client->update($params);
-    print_r($response);
+    //print_r($response);
 
 }
 
